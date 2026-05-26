@@ -7,7 +7,7 @@ DOMAIN=''
 WWW_UID=''
 WWW_GID=''
 WPCONSTCONF=''
-PUB_IP=$(curl -s http://checkip.amazonaws.com)
+PUB_IP=$(curl -s https://checkip.amazonaws.com)
 DB_HOST='mysql'
 PLUGINLIST="litespeed-cache.zip"
 THEME='twentytwenty'
@@ -31,6 +31,30 @@ help_message(){
 check_input(){
     if [ -z "${1}" ]; then
         help_message
+        exit 1
+    fi
+}
+
+validate_domain(){
+    if ! echo "${1}" | grep -Eq '^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$'; then
+        echo "[X] Invalid domain name: '${1}'. Abort!"
+        exit 1
+    fi
+}
+
+validate_app_name(){
+    case "${1}" in
+        wordpress|wp) ;;
+        *)
+            echo "[X] Invalid app name: '${1}'. Abort!"
+            exit 1
+            ;;
+    esac
+}
+
+validate_vhname(){
+    if ! echo "${1}" | grep -Eq '^[A-Za-z0-9._-]+$'; then
+        echo "[X] Invalid vhname: '${1}'. Abort!"
         exit 1
     fi
 }
@@ -257,15 +281,18 @@ while [ ! -z "${1}" ]; do
 			;;
 		-[aA] | -app | --app) shift
 			check_input "${1}"
+			validate_app_name "${1}"
 			APP_NAME="${1}"
 			;;
 		-[dD] | -domain | --domain) shift
 			check_input "${1}"
+			validate_domain "${1}"
 			DOMAIN="${1}"
 			;;
 		-vhname | --vhname) shift
+			validate_vhname "${1}"
 			VHNAME="${1}"
-			;;	       
+			;;
 		*) 
 			help_message
 			;;              

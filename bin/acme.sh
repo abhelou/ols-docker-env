@@ -6,7 +6,8 @@ INSTALL=''
 UNINSTALL=''
 TYPE=0
 CONT_NAME='litespeed'
-ACME_SRC='https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh'
+ACME_VERSION='3.1.2'
+ACME_SRC="https://raw.githubusercontent.com/acmesh-official/acme.sh/${ACME_VERSION}/acme.sh"
 EPACE='        '
 RENEW=''
 RENEW_ALL=''
@@ -73,6 +74,14 @@ domain_filter(){
     DOMAIN="${DOMAIN#scp://}"
     DOMAIN="${DOMAIN#sftp://}"
     DOMAIN=${DOMAIN%%/*}
+    validate_domain "${DOMAIN}"
+}
+
+validate_domain(){
+    if ! echo "${1}" | grep -Eq '^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$'; then
+        echo -e "[X] Invalid domain name: \e[31m${1}\e[39m. Abort!"
+        exit 1
+    fi
 }
 
 email_filter(){
@@ -258,13 +267,16 @@ main(){
         renew_all_acme
         exit 0
     elif [ "${RENEW}" = 'true' ]; then
-        renew_acme ${DOMAIN}
+        validate_domain "${DOMAIN}"
+        renew_acme "${DOMAIN}"
         exit 0
     elif [ "${REVOKE}" = 'true' ]; then
-        revoke ${DOMAIN}
+        validate_domain "${DOMAIN}"
+        revoke "${DOMAIN}"
         exit 0
     elif [ "${REMOVE}" = 'true' ]; then
-        remove ${DOMAIN}
+        validate_domain "${DOMAIN}"
+        remove "${DOMAIN}"
         exit 0
     fi
 

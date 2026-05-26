@@ -40,8 +40,8 @@ services:
     image: phpmyadmin/phpmyadmin:${PHPMYADMIN_VERSION}
     env_file:
       - .env
-    ports:
-      - 8080:80
+    #ports:
+      #- 8080:80
     environment:
       PMA_HOST: mysql
     restart: always
@@ -51,7 +51,6 @@ services:
     image: "redis:alpine"
     logging:
       driver: none
-    # command: redis-server --requirepass 8b405f60665e48f795752e534d93b722
     volumes:
       - ./redis/data:/data
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
