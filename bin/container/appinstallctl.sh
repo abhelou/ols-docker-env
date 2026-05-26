@@ -36,7 +36,7 @@ check_input(){
 }
 
 validate_domain(){
-    if ! echo "${1}" | grep -Eq '^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$'; then
+    if ! echo "${1}" | grep -Eq '^(localhost|([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,})$'; then
         echo "[X] Invalid domain name: '${1}'. Abort!"
         exit 1
     fi
