@@ -7,7 +7,7 @@
 [![LiteSpeed on Slack](https://img.shields.io/badge/slack-LiteSpeed-blue.svg?logo=slack)](https://litespeedtech.com/slack)
 [![Follow on Twitter](https://img.shields.io/twitter/follow/litespeedtech.svg?label=Follow&style=social)](https://twitter.com/litespeedtech)
 
-Install a lightweight WordPress container with OpenLiteSpeed Edge or Stable version based on Ubuntu 24.04 Linux.
+Install a lightweight WordPress container with OpenLiteSpeed Edge or Stable version based on Ubuntu 26.04 Linux.
 
 ## Prerequisites
 
@@ -41,7 +41,7 @@ The docker image installs the following packages on your system:
 
 |Component|Version|
 | :-------------: | :-------------: |
-|Linux|Ubuntu 24.04|
+|Linux|Ubuntu 26.04|
 |OpenLiteSpeed|[Latest version](https://hub.docker.com/r/litespeedtech/openlitespeed)|
 |MariaDB|[Latest Stable version: 11.8 LTS](https://hub.docker.com/_/mariadb)|
 |PHP|[Latest version](http://rpms.litespeedtech.com/debian/)|

@@ -85,10 +85,16 @@ validate_domain(){
 }
 
 email_filter(){
-    local EMAIL_CLEAN="${1%\"}"
-    EMAIL_CLEAN="${EMAIL_CLEAN#\"}"
+    local EMAIL_CLEAN="${1}"
 
-    CKREG="^[a-z0-9!#\$%&'*+/=?^_\`{|}~-]+(\.[a-z0-9!#$%&'*+/=?^_\`{|}~-]+)*@([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?\$"
+    # Hard limits: non-empty, <=254 chars (RFC 5321), and not starting with '-'
+    # (prevents argument injection into acme.sh, e.g. --email=--foo).
+    if [ -z "${EMAIL_CLEAN}" ] || [ "${#EMAIL_CLEAN}" -gt 254 ] || [ "${EMAIL_CLEAN:0:1}" = '-' ]; then
+        echo -e "[X] The E-mail \e[31m${EMAIL_CLEAN}\e[39m is invalid"
+        exit 1
+    fi
+
+    CKREG='^[A-Za-z0-9._%+-]+@[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)*\.[A-Za-z]{2,}$'
 
     if [[ "${EMAIL_CLEAN}" =~ ${CKREG} ]]; then
         echo -e "[O] The E-mail \033[32m${EMAIL_CLEAN}\033[0m is valid."
@@ -144,15 +150,18 @@ install_acme(){
             rm ~/acme.sh
         "
     elif [ "${2}" != '' ]; then
-        email_filter \"${2}\"
-        docker compose exec litespeed su -c "
+        email_filter "${2}"
+        docker compose exec \
+            -e ACME_SRC="${ACME_SRC}" \
+            -e ACME_EMAIL="${2}" \
+            litespeed su -c '
             cd &&
-            wget ${ACME_SRC} &&
+            wget "$ACME_SRC" &&
             chmod 755 acme.sh &&
-            ./acme.sh --install --cert-home ~/.acme.sh/certs --accountemail ${2} &&
+            ./acme.sh --install --cert-home ~/.acme.sh/certs --accountemail "$ACME_EMAIL" &&
             /root/.acme.sh/acme.sh --set-default-ca --server letsencrypt &&
             rm ~/acme.sh
-        "
+        '
     else
         help_message 1
         exit 1
