@@ -14,6 +14,7 @@ services:
     restart: always
     networks:
       - default
+
   litespeed:
     image: litespeedtech/openlitespeed:${OLS_VERSION}-${PHP_VERSION}
     container_name: litespeed
@@ -26,27 +27,26 @@ services:
       - ./sites:/var/www/vhosts/
       - ./acme:/root/.acme.sh/
       - ./logs:/usr/local/lsws/logs/
-    ports:
-      - 80:80
-      - 443:443
-      - 443:443/udp
-      - 7080:7080
+    expose:
+      - "80"
+      - "443"
+      - "7080"
     restart: always
     environment:
       TZ: ${TimeZone}
     networks:
       - default
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:${PHPMYADMIN_VERSION}
     env_file:
       - .env
-    #ports:
-      #- 8080:80
     environment:
       PMA_HOST: mysql
     restart: always
     networks:
       - default
+
   redis:
     image: "redis:alpine"
     logging:
@@ -59,6 +59,7 @@ services:
     restart: always
     networks:
       - default
+
 networks:
   default:
     driver: bridge
