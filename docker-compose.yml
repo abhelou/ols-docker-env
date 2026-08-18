@@ -37,15 +37,7 @@ services:
     networks:
       - default
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin:${PHPMYADMIN_VERSION}
-    env_file:
-      - .env
-    environment:
-      PMA_HOST: mysql
-    restart: always
-    networks:
-      - default
+
 
   redis:
     image: "redis:alpine"
